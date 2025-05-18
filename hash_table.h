@@ -39,13 +39,14 @@ typedef struct DLL {
 	size_t indicesPointerSize;
 	int64_t indicesLength;
 	long (*hashFunction) (String);
+	Entry* entries;
 	int8_t* indices;
-	Entry entries[];
 } HashTable;
 
 
 HashTable* CreateHashTable(const int length, const float loadFactor, const long (*hashFunction) (String idx));
 void UpdateHashTable(HashTable* table, String key, void* value);
+void DeleteEntryHashTable(HashTable* table, String key);
 void DestroyHashTable(HashTable* table);
 void* GetValueFromKey(const HashTable* hashTable, String key);
 

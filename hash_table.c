@@ -3,7 +3,8 @@
 #include "util.h"
 #include "sstring.h"
 
-void StartSparseArrayAsUnused(HashTable* table, const size_t pointerSize) {
+void StartSparseArrayAsUnused(HashTable* table) {
+	size_t pointerSize = table->indicesPointerSize;
 	IDX_TYPE empty = IDX_UNUSED;
 	for (int8_t i = 0; i < table->indicesLength; i += pointerSize) {
 		int8_t* p = &(table->indices[i]);
@@ -12,30 +13,36 @@ void StartSparseArrayAsUnused(HashTable* table, const size_t pointerSize) {
 }
 
 HashTable* CreateHashTable(const int length, const float loadFactor, const long (*hashFunction) (String idx)) {
-	HashTable* hashTable = malloc(sizeof(HashTable) + (sizeof(Entry) * (length - 1)));
+	int sizeIdx = GetSizeIdx(length);
+	uint32_t indicesLength = length * 2;
+	size_t pointerSize = SIZE[sizeIdx];
+	
+	HashTable* hashTable = malloc(sizeof(HashTable) + indicesLength * pointerSize);
+	hashTable->indices = hashTable + 1;
 	if (!hashTable)
 		return NULL;
+	//hashTable->indices = hashTable->indices + pointerSize;
+	hashTable->removedEntriesIdx = NULL;
 
+
+	//HashTable* hashTable = malloc(sizeof(HashTable) + (sizeof(Entry) * (length - 1)));
+	
 	hashTable->length = length;
 	hashTable->curLength = 0;
 	hashTable->loadFactor = loadFactor;
 	hashTable->hashFunction = hashFunction;
-	hashTable->indicesLength = length * 2;
+	hashTable->indicesLength = indicesLength;
 
-	hashTable->sizeIdx = GetSizeIdx(hashTable->indicesLength);
-	hashTable->indicesPointerSize = SIZE[hashTable->sizeIdx];
-	size_t pointerSize = SIZE[hashTable->sizeIdx];
-	hashTable->indices = malloc(hashTable->indicesLength * pointerSize);
-	if (!hashTable->indices)
-		return NULL;
-
-	StartSparseArrayAsUnused(hashTable, pointerSize);
+	hashTable->sizeIdx = sizeIdx;
+	hashTable->indicesPointerSize = pointerSize;	
+	//hashTable->indices = malloc(indicesLength * pointerSize);
+	hashTable->entries = malloc(sizeof(Entry) * length);
+	StartSparseArrayAsUnused(hashTable);
 
 	return hashTable;
 }
 
 void DestroyHashTable(HashTable* table) {
-	free(table->indices);
 	free(table);
 }
 

@@ -24,3 +24,4 @@ uint64_t nextPowerOf2(uint64_t n);
 
 int64_t GetDenseIndexFromSparseIndexPointer(int8_t* p, size_t size);
 
+int GetSizeIdx(uint64_t length);
