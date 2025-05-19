@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 typedef struct DLL {
-	size_t pSize;
 	int64_t length;
+	size_t pSize;
 	uint8_t* indices;
 } SparseArrayManager;
