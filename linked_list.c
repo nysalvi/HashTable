@@ -54,7 +54,7 @@ void UpdateCenterIdx(IntLinkedList* linked, uint32_t oldIdx) {
 	linked->center = newCenter;
 }
 
-IntLinkedList* InitIntLinkedList(uint32_t values[], int length) {
+IntLinkedList* InitIntLinkedList(int64_t values[], int length) {
 	IntLinkedList* linked = malloc(sizeof(IntLinkedList));
 	if (!length) 
 		return linked;	
@@ -120,7 +120,7 @@ IntNode* GetIntNode(IntLinkedList* linkedList, uint32_t idx) {
 	return IterNode(linkedList->center, distanceCenter * -1, 1);
 }
 
-uint32_t RemoveIntNodeAt(IntLinkedList* linked, uint32_t idx) {
+int64_t RemoveIntNodeAt(IntLinkedList* linked, uint32_t idx) {
 	if (!idx)
 		return PopIntNode(linked);
 	if (idx == linked->size - 1)
@@ -134,12 +134,12 @@ uint32_t RemoveIntNodeAt(IntLinkedList* linked, uint32_t idx) {
 	uint32_t centerIdx = CenterIdx(linked);
 	linked->size--;
 	UpdateCenterIdx(linked, centerIdx);
-	uint32_t value = node->value;
+	int64_t value = node->value;
 	free(node);
 	return value;
 }
 
-void PutIntNodeAt(IntLinkedList* linked, uint32_t value, uint32_t idx) {
+void PutIntNodeAt(IntLinkedList* linked, int64_t value, uint32_t idx) {
 	if (!idx) {
 		PushIntNode(linked, value);
 		return;
@@ -165,7 +165,7 @@ void PutIntNodeAt(IntLinkedList* linked, uint32_t value, uint32_t idx) {
 	UpdateCenterIdx(linked, centerIdx);
 }
 // removes at first position
-uint32_t PopIntNode(IntLinkedList* linkedList) {
+int64_t PopIntNode(IntLinkedList* linkedList) {
 	uint32_t oldCenterIdx = CenterIdx(linkedList);
 	IntNode* pStart = linkedList->start;
 	IntNode* node = pStart;
@@ -175,12 +175,12 @@ uint32_t PopIntNode(IntLinkedList* linkedList) {
 	linkedList->size--;
 	UpdateCenterIdx(linkedList, oldCenterIdx);
 
-	uint32_t value = node->value;
+	int64_t value = node->value;
 	free(node);
 	return value;
 }
 // inserts at first position
-void PushIntNode(IntLinkedList* linkedList, uint32_t value) {
+void PushIntNode(IntLinkedList* linkedList, int64_t value) {
 	uint32_t oldCenterIdx = CenterIdx(linkedList);
 	
 	IntNode* node = malloc(sizeof(IntNode));
@@ -195,7 +195,7 @@ void PushIntNode(IntLinkedList* linkedList, uint32_t value) {
 	UpdateCenterIdx(linkedList, oldCenterIdx);
 }
 
-void AppendIntNode(IntLinkedList* linkedList, uint32_t value) {
+void AppendIntNode(IntLinkedList* linkedList, int64_t value) {
 	uint32_t oldCenterIdx = CenterIdx(linkedList);	
 	IntNode* node = malloc(sizeof(IntNode));
 	node->previous = linkedList->end;
@@ -209,7 +209,7 @@ void AppendIntNode(IntLinkedList* linkedList, uint32_t value) {
 	UpdateCenterIdx(linkedList, oldCenterIdx);
 }
 
-uint32_t RemoveTail(IntLinkedList* linkedList) {
+int64_t RemoveTail(IntLinkedList* linkedList) {
 	uint32_t oldCenterIdx = CenterIdx(linkedList);
 
 	IntNode* tail = linkedList->end;
@@ -221,7 +221,7 @@ uint32_t RemoveTail(IntLinkedList* linkedList) {
 
 	UpdateCenterIdx(linkedList, oldCenterIdx);
 
-	uint32_t value = tail->value;
+	int64_t value = tail->value;
 	free(tail);
 	return value;
 }
