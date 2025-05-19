@@ -10,4 +10,4 @@
 #define DJBX33A_LENGTH 10
 #endif 
 
-long DJBX33A(String key);
+uint64_t DJBX33A(String key);

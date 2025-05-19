@@ -6,26 +6,6 @@
 #include "sstring.h"
 #include "linked_list.h"
 
-/*
-typedef struct DLL{
-	void* data;
-} Object;
-
-typedef struct DLL {
-	long usable;
-	long numEntries;
-	char indices[];
-} HashKeys;
-
-typedef struct DLL {
-	uint8_t capacity;
-	uint8_t size;
-	uint8_t embedded;
-	uint8_t valid;
-	Object* values[1];
-} HashValues;
-*/
-
 #ifndef PERTURB_SHIFT 
 #define PERTURB_SHIFT 5
 #endif 
@@ -38,15 +18,15 @@ typedef struct DLL {
 	int sizeIdx;
 	size_t indicesPointerSize;
 	int64_t indicesLength;
-	long (*hashFunction) (String);
+	uint64_t (*hashFunction) (String);
 	Entry* entries;
 	int8_t* indices;
 } HashTable;
 
 
-HashTable* CreateHashTable(const int length, const float loadFactor, const long (*hashFunction) (String idx));
+HashTable* CreateHashTable(const int length, const float loadFactor, const uint64_t (*hashFunction) (String idx));
 void UpdateHashTable(HashTable* table, String key, void* value);
 void DeleteEntryHashTable(HashTable* table, String key);
 void DestroyHashTable(HashTable* table);
 void* GetValueFromKey(const HashTable* hashTable, String key);
-
+HashTable* ResizeHashTable(HashTable* table);

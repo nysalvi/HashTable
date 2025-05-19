@@ -2,7 +2,7 @@
 #include "djbx33a.h"
 #include "sstring.h"
 
-long DJBX33A(String key) {
+uint64_t DJBX33A(String key) {
 	int length = key.length;
 	if (!length)
 		return 0;
