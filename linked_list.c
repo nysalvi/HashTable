@@ -5,7 +5,11 @@
 
 
 void PrintIntLinkedList(IntLinkedList* linked) {
-
+	if (!linked->size) {
+		printf("Empty List !!! ...\n");
+		return;
+	}
+		
 	IntNode* iter = linked->start;
 	int i = 0;
 	while (1) {
@@ -18,6 +22,11 @@ void PrintIntLinkedList(IntLinkedList* linked) {
 }
 
 void PrintIntLinkedListReversed(IntLinkedList* linked) {
+	if (!linked->size) {
+		printf("Empty List !!! ...\n");
+		return;
+	}
+
 	IntNode* iter = linked->end;
 	int i = linked->size - 1;
 	while (1) {
@@ -30,10 +39,15 @@ void PrintIntLinkedListReversed(IntLinkedList* linked) {
 }
 
 inline uint32_t CenterIdx(IntLinkedList* linkedList) {
-	return ceil(linkedList->size / 2.0);
+	if (!linkedList->size)
+		return 0;
+	return ceil(linkedList->size / 2.0) - 1;
 }
 
-IntNode* IterNode(IntNode* node, uint32_t iter, uint8_t leftRight) {
+inline uint32_t IsEmpty(IntLinkedList* linked) {
+	return !linked->size;
+}
+IntNode* IterNode(IntNode* node, int64_t iter, uint8_t leftRight) {
 	if (iter == 0)
 		return node;
 	if (leftRight)
@@ -41,11 +55,19 @@ IntNode* IterNode(IntNode* node, uint32_t iter, uint8_t leftRight) {
 	return IterNode(node->previous, iter - 1, leftRight);
 }
 
-void UpdateCenterIdx(IntLinkedList* linked, uint32_t oldIdx) {
-	IntNode* center = linked->center;
+void UpdateCenterIdx(IntLinkedList* linked, int64_t oldIdx) {
+	if (IsEmpty(linked)) {
+		linked->center = NULL;
+		return;
+	}
+	if (linked->size == 1) {
+		linked->center = linked->start;
+		return;
+	}
 
+	IntNode* center = linked->center;
 	uint32_t centerIdx = CenterIdx(linked);
-	uint32_t distance = centerIdx - oldIdx;
+	int64_t distance = centerIdx - oldIdx;
 	uint32_t leftRight = centerIdx > oldIdx;
 
 	uint32_t iter = leftRight ? distance : distance * -1;
@@ -56,37 +78,34 @@ void UpdateCenterIdx(IntLinkedList* linked, uint32_t oldIdx) {
 
 IntLinkedList* InitIntLinkedList(int64_t values[], int length) {
 	IntLinkedList* linked = malloc(sizeof(IntLinkedList));
-	if (!length) 
-		return linked;	
-
 	linked->size = length;
-
+	if (!length) {
+		linked->start = NULL;
+		linked->end = NULL;
+		linked->center = NULL;
+		return linked;	
+	}
 	IntNode** p = malloc(sizeof(IntNode*) * length);
 	for (uint32_t i = 0; i < length; i++) {
 		p[i] = malloc(sizeof(IntNode));
 		p[i]->value = values[i];
 	}
-
 	linked->start = p[0];
 	linked->start->previous = NULL;
-	linked->start->next = p[1];
-
-	linked->center = p[0];
-
 	linked->end = p[length - 1];
-	linked->end->previous = p[length - 2];
 	linked->end->next = NULL;
 
-	p[0]->previous = NULL;
-	p[0]->next = p[1];
-
+	if (length != 1) {
+		linked->start->next = p[1];
+		linked->end->previous = p[length - 2];
+	}
+	
 	for (uint32_t i = 1; i < length - 1; i++) {
 		p[i]->previous = p[i-1];
 		p[i]->next = p[i+1];
 	}
-	p[length - 1]->previous = p[length - 2];
-	p[length - 1]->next = NULL;
 	
+	linked->center = p[0];
 	UpdateCenterIdx(linked, 0);
 
 	free(p);
@@ -94,11 +113,15 @@ IntLinkedList* InitIntLinkedList(int64_t values[], int length) {
 }
 
 void DestroyIntLinkedList(IntLinkedList* linkedList) {
+	if (IsEmpty(linkedList)) {
+		free(linkedList);
+		return;
+	}
 	IntNode* current = linkedList->end;
 
 	while (current->previous != NULL) {
 		current = current->previous;
-		free(current->next);
+		free(current->next);		
 	}
 	free(current);
 	free(linkedList);
@@ -115,7 +138,7 @@ IntNode* GetIntNode(IntLinkedList* linkedList, uint32_t idx) {
 		return IterNode(linkedList->start, distanceStart, 1);
 	if (distanceEnd < distanceStart && distanceEnd < distanceCenter)
 		return IterNode(linkedList->end, distanceEnd, 0);
-	if (distanceCenter > 0)
+	if (distanceCenter >= 0)
 		return IterNode(linkedList->center, distanceCenter, 0);
 	return IterNode(linkedList->center, distanceCenter * -1, 1);
 }
@@ -144,7 +167,7 @@ void PutIntNodeAt(IntLinkedList* linked, int64_t value, uint32_t idx) {
 		PushIntNode(linked, value);
 		return;
 	}
-	if (idx == linked->size) {
+	if (idx == linked->size-1) {
 		AppendIntNode(linked, value);
 		return;
 	}
@@ -171,9 +194,13 @@ int64_t PopIntNode(IntLinkedList* linkedList) {
 	IntNode* node = pStart;
 
 	linkedList->start = node->next;
-	linkedList->start->previous = NULL;
+	if (linkedList->start != NULL)
+		linkedList->start->previous = NULL;
 	linkedList->size--;
 	UpdateCenterIdx(linkedList, oldCenterIdx);
+	if (IsEmpty(linkedList)) {
+		linkedList->end = NULL;
+	}
 
 	int64_t value = node->value;
 	free(node);
@@ -188,11 +215,15 @@ void PushIntNode(IntLinkedList* linkedList, int64_t value) {
 	node->value = value;
 	node->next = linkedList->start;
 	
-	linkedList->start->previous = node;
+	if (linkedList->start != NULL)
+		linkedList->start->previous = node;	
 	linkedList->start = node;
 	linkedList->size++;
 
 	UpdateCenterIdx(linkedList, oldCenterIdx);
+
+	if (linkedList->end == NULL)
+		linkedList->end = node;
 }
 
 void AppendIntNode(IntLinkedList* linkedList, int64_t value) {
@@ -202,11 +233,15 @@ void AppendIntNode(IntLinkedList* linkedList, int64_t value) {
 	node->value = value;
 	node->next = NULL;
 
-	linkedList->end->next = node;
+	if (linkedList->end != NULL)
+		linkedList->end->next = node;
 	linkedList->end = node;
 	linkedList->size++;
 
 	UpdateCenterIdx(linkedList, oldCenterIdx);
+
+	if (linkedList->start == NULL)
+		linkedList->start = node;
 }
 
 int64_t RemoveTail(IntLinkedList* linkedList) {
@@ -215,11 +250,16 @@ int64_t RemoveTail(IntLinkedList* linkedList) {
 	IntNode* tail = linkedList->end;
 	IntNode* pSecondLast = linkedList->end->previous;
 
-	pSecondLast->next = NULL;
+	if (pSecondLast != NULL)
+		pSecondLast->next = NULL;
+
 	linkedList->end = linkedList->end->previous;
 	linkedList->size--;
-
 	UpdateCenterIdx(linkedList, oldCenterIdx);
+	if (IsEmpty(linkedList)) {
+		linkedList->start = NULL;
+		linkedList->center = NULL;
+	}
 
 	int64_t value = tail->value;
 	free(tail);
