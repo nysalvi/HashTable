@@ -8,5 +8,6 @@ typedef struct {
 	int (*ToInt) (void*);
 } QuickSortArgs;
 
-void QuickSort(QuickSortArgs args);
+// use a pointer of QuickSortArgs
+unsigned __stdcall QuickSort(void* args);
 
