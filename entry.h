@@ -4,7 +4,7 @@
 
 typedef struct DLL {
 	uint32_t insertCounter;
-	String key;
+	String* key;
 	void* value;
 } Entry;
 
@@ -12,5 +12,7 @@ typedef struct DLL {
 	uint32_t global_insertion_counter;
 	uint32_t length;
 	uint32_t usedLength;
-	Entry* entries;
+	Entry** entries;
 } EntryManager;
+
+EntryManager* InitEntryManager(const int length);
