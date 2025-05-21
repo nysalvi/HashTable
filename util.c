@@ -1,16 +1,19 @@
 #include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 #include "util.h"
 
-size_t SIZE[] = { sizeof(int8_t), sizeof(int16_t), sizeof(int32_t), sizeof(int64_t) };
+size_t SIZE_POINTER[] = { sizeof(int8_t), sizeof(int16_t), sizeof(int32_t), sizeof(int64_t) };
 
-int64_t GetDenseIndexFromSparseIndexPointer(int8_t* p, size_t size) {
-	if (size == SIZE[0])
+int64_t GetDenseIndexFromSparseIndexPointer(int8_t* p, size_t size) {	
+	if (size == SIZE_POINTER[0])
 		return *p;
-	if (size == SIZE[1])
+	if (size == SIZE_POINTER[1])
 		return *((int16_t*)p);
-	if (size == SIZE[2])
+	if (size == SIZE_POINTER[2])
 		return *((int32_t*)p);
 	return *((int64_t*)p);
+	
 }
 
 
@@ -29,7 +32,7 @@ uint64_t nextPowerOf2(uint64_t n) {
 	return n + 1;
 }
 
-int GetSizeIdx(uint64_t length) {
+int GetSizeIdx(int64_t length) {
 	int sizeIdx = 0;
 
 	sizeIdx = length > 127 ? 1 : sizeIdx; // bigger than signed byte
