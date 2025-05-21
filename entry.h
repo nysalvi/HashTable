@@ -15,4 +15,5 @@ typedef struct DLL {
 	Entry** entries;
 } EntryManager;
 
+int EntryToInt(void* entry);
 EntryManager* InitEntryManager(const int length);
