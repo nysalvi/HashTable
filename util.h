@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-extern size_t SIZE[];
+extern size_t SIZE_POINTER[];
 
 extern int64_t SIZE_MASK_AND[];
 
