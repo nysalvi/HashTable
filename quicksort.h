@@ -3,8 +3,8 @@
 
 typedef struct {
 	void** data;
-	int start;
-	int end;
+	uint64_t start;
+	uint64_t end;
 	int (*ToInt) (void*);
 } QuickSortArgs;
 
