@@ -8,6 +8,10 @@ void StartDenseArrayAsEmpty(EntryManager* manager) {
 	}
 }
 
+int EntryToInt(void* entry) {
+	return ((Entry*)entry)->insertCounter;
+}
+
 EntryManager* InitEntryManager(const uint64_t length) {
 	EntryManager* entryManager = malloc(sizeof(EntryManager) + sizeof(Entry*) * length);
 	entryManager->entries = entryManager + 1;
